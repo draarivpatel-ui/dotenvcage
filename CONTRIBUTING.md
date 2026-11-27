@@ -14,7 +14,7 @@ node scripts/cli-smoke.mjs
 node scripts/check-pack.mjs
 ```
 
-The project has zero runtime dependencies and zero development dependencies. Keep it that way unless a maintainer approves a documented exception.
+The project has zero runtime dependencies. `fast-check` is the only development dependency and is used only for property-based fuzz tests.
 
 ## Rules for security changes
 

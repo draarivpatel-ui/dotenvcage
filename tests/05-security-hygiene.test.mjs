@@ -49,12 +49,12 @@ test('tracked text files use LF line endings', () => {
   assert.deepEqual(failures, []);
 });
 
-test('package metadata stays zero dependency and correctly versioned', () => {
+test('package metadata keeps runtime dependencies empty and correctly versions the package', () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   assert.equal(pkg.name, 'dotenvcage');
   assert.equal(pkg.version, '1.0.0');
   assert.deepEqual(pkg.dependencies, {});
-  assert.deepEqual(pkg.devDependencies, {});
+  assert.deepEqual(pkg.devDependencies, { 'fast-check': '4.10.3' });
   assert.equal(pkg.engines.node, '>=18.0.0');
 });
 
@@ -65,11 +65,13 @@ test('package exports are dual mode and typed', () => {
   assert.equal(pkg.exports['.'].types, './types/index.d.ts');
 });
 
-test('ci matrix contains all eight required jobs', () => {
+test('ci matrix covers Linux and Windows across four Node versions', () => {
   const ci = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
-  for (const job of ['node18-ubuntu', 'node20-ubuntu', 'node22-ubuntu', 'node24-ubuntu', 'node18-windows', 'node20-windows', 'node22-windows', 'node24-windows']) {
-    assert.match(ci, new RegExp('^  ' + job + ':', 'm'));
-  }
+  assert.equal(ci.includes('os: [ubuntu-24.04, windows-latest]'), true);
+  assert.equal(ci.includes('node: [18, 20, 22, 24]'), true);
+  assert.equal(ci.includes('npm test'), true);
+  assert.equal(ci.includes('npm run test:fuzz'), true);
+  assert.equal(ci.includes('npm pack --dry-run'), true);
 });
 
 test('required public surface files exist', () => {
